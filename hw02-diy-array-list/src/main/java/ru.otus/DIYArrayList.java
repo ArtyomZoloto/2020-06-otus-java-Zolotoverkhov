@@ -6,13 +6,10 @@ public class DIYArrayList<T> implements List<T> {
 
     private int size;
 
-    private int capacity = 5;
-
     private T[] array;
 
     public DIYArrayList() {
-        this.array = (T[]) new Object[capacity];
-        ;
+        this.array = (T[]) new Object[5];
     }
 
     public DIYArrayList(int capacity) {
