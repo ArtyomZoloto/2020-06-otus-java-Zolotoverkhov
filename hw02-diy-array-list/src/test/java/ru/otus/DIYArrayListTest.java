@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,32 +21,38 @@ class DIYArrayListTest {
     @Test
     void testAdd() {
         DIYArrayList<String> list = new DIYArrayList<>();
-        list.add("a");
-        list.add("b");
-        list.add("c");
-        assertEquals(3, list.size());
+        int i = 0;
+        while (i < 50) {
+            list.add("name " + i);
+            i++;
+        }
+        assertEquals(50, list.size());
+        assertEquals("name 0", list.get(0));
+        assertEquals("name 2", list.get(2));
+        assertEquals("name 40", list.get(40));
+        assertEquals("name 49", list.get(49));
     }
 
     @Test
     void testRemove() {
         DIYArrayList<String> list = new DIYArrayList<>();
-        list.add("a"); //1
-        list.add("b"); //2
-        list.add("c"); //3
-        list.add("d"); //4
-        list.add("e"); //5
+        list.add("a"); //0
+        list.add("b"); //1
+        list.add("c"); //2
+        list.add("d"); //3
+        list.add("e"); //4
         assertEquals(5, list.size());
 
-        String removed = list.remove(1); //remove "b"
-        assertEquals("b", removed);
-        assertEquals("a", list.get(0));
+        String removed = list.remove(0); //remove "a"
+        assertEquals("a", removed);
+        assertEquals("b", list.get(0));
         assertEquals("c", list.get(1));
         assertEquals("d", list.get(2));
         assertEquals("e", list.get(3));
 
         removed = list.remove(2); //remove "d"
         assertEquals("d", removed);
-        assertEquals("a", list.get(0));
+        assertEquals("b", list.get(0));
         assertEquals("c", list.get(1));
         assertEquals("e", list.get(2));
 
@@ -74,16 +81,29 @@ class DIYArrayListTest {
     @Test
     void testSort() {
 
-        DIYArrayList<String> namesList = new DIYArrayList<>();
-        namesList.add("3Pavel");
-        namesList.add("1Ivan");
-        namesList.add("2Marina");
+        DIYArrayList<Integer> namesList = new DIYArrayList<>();
+        namesList.add(Integer.valueOf(3));
+        namesList.add(Integer.valueOf(1));
+        namesList.add(Integer.valueOf(2));
 
-        Collections.sort(namesList, String::compareTo);
+        Comparator<Integer> comparator = (o1, o2) -> {
+            if (o2 == null || o1 == null) {
+                return 0;
+            }
+            if (o1 > o2) {
+                return 1;
+            } else if (o1 < o2) {
+                return -1;
+            } else {
+                return 0;
+            }
+        };
 
-        assertEquals("1Ivan", namesList.get(0));
-        assertEquals("2Marina", namesList.get(1));
-        assertEquals("3Pavel", namesList.get(2));
+        Collections.sort(namesList, comparator);
+
+        assertEquals(Integer.valueOf(1), namesList.get(0));
+        assertEquals(Integer.valueOf(2), namesList.get(1));
+        assertEquals(Integer.valueOf(3), namesList.get(2));
     }
 
     @Test
@@ -108,22 +128,29 @@ class DIYArrayListTest {
     @Test
     void testAddAtIndex() {
         DIYArrayList<String> source = new DIYArrayList<>();
-        source.add("Cat");
-        source.add("Dog");
-        source.add("Snake");
+        source.add("a");
+        source.add("b");
+        source.add("c");
+        source.add("d");
+        source.add("e");
+        source.add("f");
+        source.add("g");
+        source.add("h");
 
-        source.add(0,"Mouse");
-        source.add(2,"Horse");
+        source.add(1, "a1");
+        source.add(7, "g1");
 
-        assertEquals("Mouse",source.get(0));
-        assertEquals("Cat",source.get(1));
-        assertEquals("Horse",source.get(2));
-        assertEquals("Dog",source.get(3));
-        assertEquals("Snake",source.get(4));
+        assertEquals("a", source.get(0));
+        assertEquals("a1", source.get(1));
+        assertEquals("b", source.get(2));
+        assertEquals("c", source.get(3));
+        assertEquals("g1", source.get(7));
+        assertEquals("g", source.get(8));
+
     }
 
     @Test
-    void testClear(){
+    void testClear() {
         DIYArrayList<String> source = new DIYArrayList<>();
         source.add("Cat");
         source.add("Dog");
@@ -131,7 +158,7 @@ class DIYArrayListTest {
 
         source.clear();
 
-        assertEquals(0,source.size());
+        assertEquals(0, source.size());
     }
 
 }

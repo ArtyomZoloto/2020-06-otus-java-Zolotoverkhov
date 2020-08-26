@@ -4,34 +4,50 @@ import java.util.*;
 
 public class DIYArrayList<T> implements List<T> {
 
+    private int size;
 
-    private T[] innerArray = (T[]) new Object[0];
+    private int capacity = 5;
 
+    private T[] array;
+
+    public DIYArrayList() {
+        this.array = (T[]) new Object[capacity];
+        ;
+    }
+
+    public DIYArrayList(int capacity) {
+        this.array = (T[]) new Object[capacity];
+    }
 
     @Override
     public int size() {
-        return innerArray.length;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return innerArray.length == 0;
+        return size() == 0;
     }
 
     @Override
     public boolean contains(Object o) {
-        return Arrays.stream(innerArray).anyMatch(item -> item.equals(o));
+        for (int i = 0; i < size(); i++) {
+            if (array[i].equals(o)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //TODO: Возможно сделать лучше, чтобы не было утечки памяти из-за зануления ссылок.
     @Override
     public Iterator<T> iterator() {
-        return new DIYIterator<T>(innerArray);
+        return new DIYIterator<T>(array);
     }
 
     @Override
     public Object[] toArray() {
-        return innerArray;
+        return array;
     }
 
     //TODO: Что делает этот метод????
@@ -42,15 +58,18 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public boolean add(T t) {
-        int prevLenght = innerArray.length;
-        this.add(innerArray.length,t);
-        return prevLenght < innerArray.length;
+        if (size() + 1 > array.length) {
+            grow();
+        }
+        int prevSize = size();
+        array[size++] = t;
+        return prevSize < size();
     }
 
     @Override
     public boolean remove(Object o) {
-        for (int i = 0; i < innerArray.length; i++) {
-            if (innerArray[i].equals(o)) {
+        for (int i = 0; i < size(); i++) {
+            if (array[i].equals(o)) {
                 this.remove(i);
                 return true;
             }
@@ -81,7 +100,7 @@ public class DIYArrayList<T> implements List<T> {
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         for (Object o : c) {
-          this.add(index++, (T) o);
+            this.add(index++, (T) o);
         }
         return true;
     }
@@ -98,30 +117,30 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public void clear() {
-        for (int i = 0; i <= innerArray.length+1; i++) {
+        for (int i = 0; i <= size() + 1; i++) {
             this.remove(0);
         }
     }
 
     @Override
     public T get(int index) {
-        return innerArray[index];
+        return array[index];
     }
 
     @Override
     public T set(int index, T element) {
-        T prevElem = innerArray[index];
-        innerArray[index] = element;
+        T prevElem = array[index];
+        array[index] = element;
         return prevElem;
     }
 
     @Override
     public void add(int index, T element) {
-        T[] dest = (T[]) new Object[innerArray.length + 1];
-        System.arraycopy(innerArray, 0, dest, 0, index);
-        dest[index] = element;
-        System.arraycopy(innerArray, index, dest,index +1, dest.length - index - 1);
-        innerArray = dest;
+        if (array.length + 1 > size()) {
+            grow();
+        }
+        System.arraycopy(array, index, array, index + 1, size() - index);
+        array[index] = element;
     }
 
     @Override
@@ -131,18 +150,16 @@ public class DIYArrayList<T> implements List<T> {
             throw new UnsupportedOperationException("No elements in list!");
         }
 
-        T[] newArray = (T[]) new Object[innerArray.length - 1];
-        System.arraycopy(innerArray, 0, newArray, 0, index);
-        System.arraycopy(innerArray, index + 1, newArray, index, innerArray.length - index - 1);
-        T obj = innerArray[index];
-        innerArray = newArray;
+        T obj = get(index);
+        System.arraycopy(array, index + 1, array, index, array.length - index - 1);
+        size--;
         return obj;
     }
 
     @Override
     public int indexOf(Object o) {
-        for (int i = 0; i < innerArray.length; i++) {
-            if (innerArray[i].equals(o)) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(o)) {
                 return i;
             }
         }
@@ -152,8 +169,8 @@ public class DIYArrayList<T> implements List<T> {
     @Override
     public int lastIndexOf(Object o) {
         int lastIndexOf = -1;
-        for (int i = 0; i < innerArray.length; i++) {
-            if (innerArray[i].equals(o)) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(o)) {
                 lastIndexOf = i;
             }
         }
@@ -162,7 +179,7 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        return new DIYListIterator<>(innerArray);
+        return new DIYListIterator<>(array);
     }
 
     @Override
@@ -177,5 +194,11 @@ public class DIYArrayList<T> implements List<T> {
             newList.add(this.get(i));
         }
         return newList;
+    }
+
+    private void grow() {
+        T[] dest = (T[]) new Object[array.length + array.length / 2];
+        System.arraycopy(array, 0, dest, 0, array.length);
+        array = dest;
     }
 }
