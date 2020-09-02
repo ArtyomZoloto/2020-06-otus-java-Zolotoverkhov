@@ -10,4 +10,5 @@
 rootProject.name = 'otusJava'
 include 'hw01-gradle'
 include 'hw02-diy-array-list'
+include 'hw03-diy-test-framework'
 
