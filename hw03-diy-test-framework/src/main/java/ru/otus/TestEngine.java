@@ -5,7 +5,6 @@ import ru.otus.annotations.Before;
 import ru.otus.annotations.Test;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -27,7 +26,7 @@ public class TestEngine {
         try {
             Class clazz = Class.forName(className);
             TestEngine testEngine = new TestEngine(clazz);
-            testEngine.getMethods(clazz);
+            testEngine.addMethods();
             testEngine.runTests();
             testEngine.printResults();
         } catch (Exception e) {
@@ -35,8 +34,8 @@ public class TestEngine {
         }
     }
 
-    private void getMethods(Class clazz) {
-        for (Method method : clazz.getDeclaredMethods()) {
+    private void addMethods() {
+        for (Method method : testClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Before.class)) {
                 beforeMethods.add(method);
             } else if (method.isAnnotationPresent(After.class)) {
@@ -56,7 +55,6 @@ public class TestEngine {
             runBeforeAndAfter(afterMethods, testObject);
         }
     }
-
 
     private void runBeforeAndAfter(List<Method> methods, Object testObject) {
         for (Method method : methods) {
