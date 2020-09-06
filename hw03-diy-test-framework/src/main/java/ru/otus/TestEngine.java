@@ -8,7 +8,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
-
+/**
+ * Движок тест-фреймворка.
+ * На каждый тест создается свой instance тестового класса, прогоняются
+ * After-методы, сам тест и Before-методы.
+ */
 public class TestEngine {
 
     private List<Method> testMethods = new ArrayList();
@@ -47,9 +51,8 @@ public class TestEngine {
     }
 
     private void runTests() throws Exception {
-        Constructor<?> constructor = testClass.getConstructor();
-        Object testObject = constructor.newInstance();
         for (Method testMethod : testMethods) {
+            Object testObject = testClass.getConstructor().newInstance();
             runBeforeAndAfter(beforeMethods, testObject);
             runTest(testMethod, testObject);
             runBeforeAndAfter(afterMethods, testObject);
