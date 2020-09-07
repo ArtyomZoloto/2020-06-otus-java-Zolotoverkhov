@@ -2,6 +2,7 @@ package ru.otus.aop;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,10 +35,8 @@ public class InvocationHandlerImpl implements InvocationHandler {
         sb.append("executed method: ");
         sb.append(method.getName());
         sb.append(", params:");
-        for (Object arg : args) {
-            sb.append(" ").append(arg).append(",");
-        }
-        System.out.println(sb.substring(0, sb.length() - 1));
+        sb.append(Arrays.toString(args));
+        System.out.println(sb.toString());
     }
 
     private void fillMethodsToLog(TestLogging testLogging) {
