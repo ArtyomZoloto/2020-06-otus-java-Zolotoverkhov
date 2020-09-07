@@ -2,12 +2,18 @@ package ru.otus.aop;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * Класс для перехвата методов и вызова логирования.
+ * Действует на все методы, которые называются так же, как
+ * и исходные метод, помеченный аннотацией @Log.
+ */
 public class InvocationHandlerImpl implements InvocationHandler {
     private final TestLogging originalTestLogging;
-    private Map<String, Class[]> methodsToLog = new HashMap<>();
+    private Set<String> methodsToLog = new HashSet<>();
+    StringBuilder sb = new StringBuilder();
 
     public InvocationHandlerImpl(TestLogging testLogging) {
         this.originalTestLogging = testLogging;
@@ -16,37 +22,38 @@ public class InvocationHandlerImpl implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (match(method, args)) {
-            log();
+        if (methodsToLog.contains(getMethodSignatureString(method))) {
+            log(method, args);
         }
         method.invoke(originalTestLogging, args);
         return null;
     }
 
-    private void log() {
-        System.out.println("executed!");
+    private void log(Method method, Object[] args) {
+        sb.delete(0, sb.length());
+        sb.append("executed method: ");
+        sb.append(method.getName());
+        sb.append(", params:");
+        for (Object arg : args) {
+            sb.append(" ").append(arg).append(",");
+        }
+        System.out.println(sb.substring(0, sb.length() - 1));
     }
 
     private void fillMethodsToLog(TestLogging testLogging) {
         for (Method method : testLogging.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(Log.class)) {
-                methodsToLog.put(method.getName(), method.getParameterTypes());
+                methodsToLog.add(getMethodSignatureString(method));
             }
         }
     }
 
-    private boolean match(Method method, Object[] args) {
-        Class[] params = methodsToLog.get(method.getName());
-        if (params == null || params.length != args.length) {
-            return false;
+    private String getMethodSignatureString(Method method) {
+        sb.delete(0, sb.length());
+        sb.append(method.getReturnType().getName()).append(method.getName());
+        for (Class cl : method.getParameterTypes()) {
+            sb.append(cl.getName());
         }
-        for (int i = 0; i < args.length; i++) {
-           Class argClass =  args[i].getClass();
-           Class methodRequiredArgClass = method.getParameterTypes()[i];
-           if (!argClass.getName().equals(methodRequiredArgClass.getName())) {
-               //map()
-           }
-        }
-        return true;
+        return sb.toString();
     }
 }
