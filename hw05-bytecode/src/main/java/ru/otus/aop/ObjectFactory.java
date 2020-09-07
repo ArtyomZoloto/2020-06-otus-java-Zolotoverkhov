@@ -8,7 +8,7 @@ public class ObjectFactory {
         TestLogging testLogging = new TestLoggingImpl();
         InvocationHandler invocationHandler = new InvocationHandlerImpl(testLogging);
         return (TestLogging) Proxy.newProxyInstance(TestLogging.class.getClassLoader(),
-                new Class[]{TestLogging.class, Log.class}, invocationHandler
+                new Class[]{TestLogging.class}, invocationHandler
         );
     }
 }
