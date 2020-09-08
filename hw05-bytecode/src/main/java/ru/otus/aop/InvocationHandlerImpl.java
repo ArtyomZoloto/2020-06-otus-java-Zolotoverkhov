@@ -49,7 +49,7 @@ public class InvocationHandlerImpl implements InvocationHandler {
 
     private String getMethodSignatureString(Method method) {
         sb.delete(0, sb.length());
-        sb.append(method.getReturnType().getName()).append(method.getName());
+        sb.append(method.getName());
         for (Class cl : method.getParameterTypes()) {
             sb.append(cl.getName());
         }
