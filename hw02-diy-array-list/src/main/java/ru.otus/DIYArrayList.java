@@ -44,7 +44,7 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public Object[] toArray() {
-        return array;
+        return Arrays.copyOf(array,size());
     }
 
     //TODO: Что делает этот метод????
