@@ -1,6 +1,7 @@
 package ru.otus.atm;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.atm.result.AtmOperationResult;
 import ru.otus.atm.result.AtmOperationStatus;
@@ -9,20 +10,18 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.*;
 
+@DisplayName("Проверка работоспособности банкомата.")
 class AtmImplTest {
 
     private Atm atm;
 
-    @Test
-    void withdraw() {
-    }
 
     @BeforeEach
     void beforeEach() {
         atm = new AtmImpl();
     }
 
-
+    @DisplayName("Добавляем по одной банкноте и сравниваем всю сумму с внесенной.")
     @Test
     void addOneBanknote() {
         atm.add(Arrays.asList(new Banknote(BanknoteType.B100)));
@@ -39,6 +38,7 @@ class AtmImplTest {
         assertThat(atm.getBalance()).isEqualTo(8800);
     }
 
+    @DisplayName("Добавляем по несколько банкнот и сравниваем всю сумму с внесенной.")
     @Test
     void addMultiple() {
         atm.add(Arrays.asList(new Banknote(BanknoteType.B100), new Banknote(BanknoteType.B500)));
@@ -49,6 +49,7 @@ class AtmImplTest {
         assertThat(atm.getBalance()).isEqualTo(7800);
     }
 
+    @DisplayName("Добавляем 400(100+100+200) рублей, снимаем 200. Должен выдать 1 банкноту в 200рублей.")
     @Test
     void withdrawByMaxBanknoteValues() {
         Banknote b1 = new Banknote(BanknoteType.B100);
@@ -63,6 +64,7 @@ class AtmImplTest {
         assertThat(result.getBanknotes()).doesNotContain(b2);
     }
 
+    @DisplayName("Добавляем 600(100+500) рублей, пытаемся снять 400. Должен откзать, т.к. нет размена.")
     @Test
     void withdrawNoAvailableExchargeBanknotes() {
         Banknote b1 = new Banknote(BanknoteType.B500);
@@ -74,6 +76,7 @@ class AtmImplTest {
         assertThat(result.getBanknotes()).isNull();
     }
 
+    @DisplayName("Пытаемся снять больше, чем есть денег в банкомате. Ожидается отказ операции.")
     @Test
     void noMoneyInTheAtm() {
         Banknote b1 = new Banknote(BanknoteType.B5000);
