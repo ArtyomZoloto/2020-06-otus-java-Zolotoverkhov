@@ -22,7 +22,6 @@ public class AtmImpl implements Atm {
     @Override
     public AtmOperationResult withdraw(int amount) {
         if (amount > balance) {
-            System.out.println("В банкомате недостаточно денег");
             return new AtmOperationResult(AtmOperationStatus.INSUFFICIENT_FUNDS, null);
         }
         Collection<Banknote> moneyToClient = withdrawBanknotes(amount);
