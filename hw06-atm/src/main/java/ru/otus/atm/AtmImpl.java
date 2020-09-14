@@ -4,21 +4,22 @@ import ru.otus.atm.banknotes.Banknote;
 import ru.otus.atm.banknotes.BanknoteType;
 import ru.otus.atm.result.AtmOperationResult;
 import ru.otus.atm.result.AtmOperationStatus;
+import ru.otus.atm.storage.*;
 
 import java.util.*;
 
 public class AtmImpl implements Atm {
 
-    private Storage storage = new Storage(); // агрегация - хранищиле без банкомата не существует.
+    private BanknoteStorage banknoteStorage = new CasseteBanknoteStorage(); // агрегация - хранищиле без банкомата не существует.
 
     @Override
     public int getBalance() {
-        return storage.getBalance();
+        return banknoteStorage.getBalance();
     }
 
     @Override
     public AtmOperationResult withdraw(int amount) {
-        if (amount > storage.getBalance()) {
+        if (amount > banknoteStorage.getBalance()) {
             return new AtmOperationResult(AtmOperationStatus.INSUFFICIENT_FUNDS, null);
         }
         Collection<Banknote> moneyToClient = withdrawBanknotes(amount);
@@ -31,7 +32,7 @@ public class AtmImpl implements Atm {
     @Override
     public void add(Banknote... banknotes) {
         for (Banknote banknote : banknotes) {
-            storage.add(banknote);
+            banknoteStorage.add(banknote);
         }
     }
 
@@ -45,7 +46,7 @@ public class AtmImpl implements Atm {
             }
             if (division >= 1) {
                 int integerPart = (int) division;
-                int banknoteAvailability = storage.sizeOf(banknoteType) - integerPart;
+                int banknoteAvailability = banknoteStorage.sizeOf(banknoteType) - integerPart;
                 int banknotesCountToWithdraw = integerPart;
                 if (banknoteAvailability < 0) {
                     banknotesCountToWithdraw = integerPart + banknoteAvailability;
@@ -74,7 +75,7 @@ public class AtmImpl implements Atm {
     private Collection<Banknote> getBanknotesFromStorage(Map<BanknoteType, Integer> desiredBanknotes) {
         Collection<Banknote> banknotesToReturn = new HashSet<>();
         for (Map.Entry<BanknoteType, Integer> entry : desiredBanknotes.entrySet()) {
-            banknotesToReturn.addAll(storage.get(entry.getKey(),entry.getValue()));
+            banknotesToReturn.addAll(banknoteStorage.get(entry.getKey(),entry.getValue()));
         }
         return banknotesToReturn;
     }

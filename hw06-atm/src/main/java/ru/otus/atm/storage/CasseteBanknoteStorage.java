@@ -1,4 +1,4 @@
-package ru.otus.atm;
+package ru.otus.atm.storage;
 
 import lombok.NonNull;
 import ru.otus.atm.banknotes.*;
@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Ящик-хранилище банковских куплюр. С кассетами под каждый тип купюры.
  */
-public class Storage {
+public class CasseteBanknoteStorage implements BanknoteStorage {
     private List<Banknote100> cassete100 = new LinkedList<>();
     private List<Banknote200> cassete200 = new LinkedList<>();
     private List<Banknote500> cassete500 = new LinkedList<>();
@@ -20,11 +20,10 @@ public class Storage {
         return balance;
     }
 
-    /**
-     * Куча перегруженных методов для добавляения каждой банкноты в свою ячейку.
-     * Не используются, но полезные.
-     * @param banknote
-     */
+    public int sizeOf(@NonNull BanknoteType banknoteType) {
+        return getCasseteOfType(banknoteType).size();
+    }
+
     public void add(Banknote100 banknote) {
         cassete100.add(banknote);
         balance += banknote.getValue();
@@ -55,10 +54,6 @@ public class Storage {
         balance += banknote.getValue();
     }
 
-    /**
-     * Добавляем любые купюры без разбора.
-     * @param banknote купюра любого номинала.
-     */
     public void add(Banknote banknote) {
         if (banknote instanceof Banknote100) {
             cassete100.add((Banknote100) banknote);
@@ -81,13 +76,6 @@ public class Storage {
         }
     }
 
-    /**
-     * Возвращает указанное количество банкнот определенного типа.
-     *
-     * @param type  номинал(тип) банкноты
-     * @param count количество банкнот для выдачи
-     * @return Купюры для выдачи
-     */
     public Collection<Banknote> get(BanknoteType type, int count) {
         List<? extends Banknote> cassete = getCasseteOfType(type);
         balance -= type.getValue() * count;
@@ -125,14 +113,5 @@ public class Storage {
             default:
                 throw new UnsupportedOperationException("Unknown banknote!!!");
         }
-    }
-
-    /**
-     * Показывает, сколько купюр в данный момент находится в кассете.
-     * @param banknoteType тип купюры.
-     * @return количество заряженых банкнот.
-     */
-    public int sizeOf(@NonNull BanknoteType banknoteType) {
-        return getCasseteOfType(banknoteType).size();
     }
 }
