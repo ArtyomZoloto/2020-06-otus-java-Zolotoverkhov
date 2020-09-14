@@ -1,27 +1,24 @@
 package ru.otus.atm;
 
+import ru.otus.atm.banknotes.Banknote;
+import ru.otus.atm.banknotes.BanknoteType;
 import ru.otus.atm.result.AtmOperationResult;
 import ru.otus.atm.result.AtmOperationStatus;
 
 import java.util.*;
 
 public class AtmImpl implements Atm {
-    private Map<BanknoteType, Set<Banknote>> storage = new EnumMap<>(BanknoteType.class);
-    private int balance;
-    {
-        for (BanknoteType type : BanknoteType.values()) {
-            storage.put(type, new HashSet<>());
-        }
-    }
+
+    private Storage storage = new Storage(); // агрегация - хранищиле без банкомата не существует.
 
     @Override
     public int getBalance() {
-        return balance;
+        return storage.getBalance();
     }
 
     @Override
     public AtmOperationResult withdraw(int amount) {
-        if (amount > balance) {
+        if (amount > storage.getBalance()) {
             return new AtmOperationResult(AtmOperationStatus.INSUFFICIENT_FUNDS, null);
         }
         Collection<Banknote> moneyToClient = withdrawBanknotes(amount);
@@ -32,10 +29,9 @@ public class AtmImpl implements Atm {
     }
 
     @Override
-    public void add(Collection<Banknote> banknotes) {
+    public void add(Banknote... banknotes) {
         for (Banknote banknote : banknotes) {
-            storage.get(banknote.getType()).add(banknote);
-            balance += banknote.getValue();
+            storage.add(banknote);
         }
     }
 
@@ -49,7 +45,7 @@ public class AtmImpl implements Atm {
             }
             if (division >= 1) {
                 int integerPart = (int) division;
-                int banknoteAvailability = storage.get(banknoteType).size() - integerPart;
+                int banknoteAvailability = storage.sizeOf(banknoteType) - integerPart;
                 int banknotesCountToWithdraw = integerPart;
                 if (banknoteAvailability < 0) {
                     banknotesCountToWithdraw = integerPart + banknoteAvailability;
@@ -62,28 +58,23 @@ public class AtmImpl implements Atm {
             }
         }
         if (isTransferConfimed(desiredBanknotes, amount)) {
-            balance -= amount;
             return getBanknotesFromStorage(desiredBanknotes);
         }
         return null;
     }
 
     private boolean isTransferConfimed(Map<BanknoteType, Integer> desiredBanknotes, int amount) {
-        int sum = desiredBanknotes.entrySet()
+        int sumValuesOfBanknotes = desiredBanknotes.entrySet()
                 .stream()
                 .mapToInt(entry -> entry.getKey().getValue() * entry.getValue())
-                .reduce(0,Integer::sum);
-        return sum == amount;
+                .reduce(0, Integer::sum);
+        return sumValuesOfBanknotes == amount;
     }
 
     private Collection<Banknote> getBanknotesFromStorage(Map<BanknoteType, Integer> desiredBanknotes) {
         Collection<Banknote> banknotesToReturn = new HashSet<>();
         for (Map.Entry<BanknoteType, Integer> entry : desiredBanknotes.entrySet()) {
-            Set<Banknote> banknotesInStorageOfType = storage.get(entry.getKey());
-            for (Banknote banknote : banknotesInStorageOfType) {
-                banknotesToReturn.add(banknote);
-                banknotesInStorageOfType.remove(banknote);
-            }
+            banknotesToReturn.addAll(storage.get(entry.getKey(),entry.getValue()));
         }
         return banknotesToReturn;
     }

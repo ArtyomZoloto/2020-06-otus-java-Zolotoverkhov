@@ -1,7 +1,7 @@
 package ru.otus.atm.result;
 
 import lombok.Value;
-import ru.otus.atm.Banknote;
+import ru.otus.atm.banknotes.Banknote;
 
 import java.util.Collection;
 

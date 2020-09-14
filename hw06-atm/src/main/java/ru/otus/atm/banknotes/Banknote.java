@@ -1,11 +1,9 @@
-package ru.otus.atm;
+package ru.otus.atm.banknotes;
 
-import java.util.Objects;
-
-public class Banknote {
+public abstract class Banknote {
     private BanknoteType type;
 
-    public Banknote(BanknoteType type) {
+    Banknote(BanknoteType type) {
         this.type = type;
     }
 

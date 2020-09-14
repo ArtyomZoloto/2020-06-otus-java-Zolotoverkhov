@@ -1,4 +1,4 @@
-package ru.otus.atm;
+package ru.otus.atm.banknotes;
 
 public enum BanknoteType {
     B5000(5000),

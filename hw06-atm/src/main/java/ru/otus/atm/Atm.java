@@ -1,5 +1,6 @@
 package ru.otus.atm;
 
+import ru.otus.atm.banknotes.Banknote;
 import ru.otus.atm.result.AtmOperationResult;
 
 import java.util.Collection;
@@ -9,10 +10,10 @@ import java.util.Collection;
  */
 public interface Atm {
     /**
-     * Положить деньги в банкомат
-     * @param banknotes пачка купюр различного номинала
+     * Положить деньги в банкомат по одной или пачкой.
+     * @param banknotes пачка купюр различного номинала или 1 купюра.
      */
-    void add(Collection<Banknote> banknotes);
+    void add(Banknote... banknotes);
 
     /**
      * Снять деньги с банкомата
