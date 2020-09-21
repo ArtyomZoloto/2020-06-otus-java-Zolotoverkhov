@@ -1,6 +1,7 @@
 package ru.otus.atm;
 
 import ru.otus.atm.banknotes.Banknote;
+import ru.otus.atm.exceptions.AtmException;
 import ru.otus.atm.result.AtmOperationResult;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ public interface Atm {
      * @param amount сумма для снятия
      * @return пачка купюр различного номинала, эквивалентная запрошеной сумме.
      */
-    AtmOperationResult withdraw(int amount);
+    AtmOperationResult get(int amount);
 
     /**
      * Узнать, сколько денег внутри банкомата

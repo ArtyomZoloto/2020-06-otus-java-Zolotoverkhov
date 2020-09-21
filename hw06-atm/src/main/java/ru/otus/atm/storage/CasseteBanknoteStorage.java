@@ -2,6 +2,8 @@ package ru.otus.atm.storage;
 
 import lombok.NonNull;
 import ru.otus.atm.banknotes.*;
+import ru.otus.atm.exceptions.NoBanknoteException;
+
 import java.util.*;
 
 /**
@@ -76,19 +78,24 @@ public class CasseteBanknoteStorage implements BanknoteStorage {
         }
     }
 
-    public Collection<Banknote> get(BanknoteType type, int count) {
+    public Optional<Collection<Banknote>> get(BanknoteType type, int count) throws NoBanknoteException {
+        if (sizeOf(type) < count) {
+            return Optional.empty();
+        }
         List<? extends Banknote> cassete = getCasseteOfType(type);
-        balance -= type.getValue() * count;
-        return getBanknotes(cassete, count);
-    }
-
-    private Collection<Banknote> getBanknotes(List<? extends Banknote> cassete, int count) {
         Set<Banknote> banknotes = new HashSet<>();
         for (int i = 0; i < count; i++) {
-            banknotes.add(cassete.get(0));
-            cassete.remove(0);
+            Banknote b;
+            try {
+                 b = cassete.get(0);
+            } catch (IndexOutOfBoundsException e) {
+                throw new NoBanknoteException("закончились купюры типа" + type);
+            }
+            banknotes.add(b);
+            cassete.remove(b);
         }
-        return banknotes;
+        balance -= type.getValue() * count;
+        return Optional.of(banknotes);
     }
 
     /**

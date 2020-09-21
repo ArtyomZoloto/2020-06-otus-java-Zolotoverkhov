@@ -55,7 +55,7 @@ class AtmImplTest {
         Banknote b2 = new Banknote100();
         Banknote b3 = new Banknote200();
         atm.add(b1,b2,b3);
-        AtmOperationResult result = atm.withdraw(200);
+        AtmOperationResult result = atm.get(200);
         assertThat(result.getStatus()).isEqualTo(AtmOperationStatus.SUCCESS);
         assertThat(result.getBanknotes()).size().isEqualTo(1);
         assertThat(result.getBanknotes()).contains(b3);
@@ -71,8 +71,8 @@ class AtmImplTest {
         Banknote b2 = new Banknote100();
         atm.add(b1,b2);
         assertThat(atm.getBalance()).isEqualTo(600);
-        AtmOperationResult result = atm.withdraw(400);
-        assertThat(result.getStatus()).isEqualTo(AtmOperationStatus.NO_EXCHARGE);
+        AtmOperationResult result = atm.get(400);
+        assertThat(result.getStatus()).isEqualTo(AtmOperationStatus.NO_BANKNOTES);
         assertThat(result.getBanknotes()).isNull();
     }
 
@@ -83,7 +83,7 @@ class AtmImplTest {
         Banknote b2 = new Banknote2000();
         atm.add(b1,b2);
         assertThat(atm.getBalance()).isEqualTo(7000);
-        AtmOperationResult result = atm.withdraw(8000);
+        AtmOperationResult result = atm.get(8000);
         assertThat(result.getStatus()).isEqualTo(AtmOperationStatus.INSUFFICIENT_FUNDS);
         assertThat(result.getBanknotes()).isNull();
     }

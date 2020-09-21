@@ -6,7 +6,8 @@ package ru.otus.atm.result;
 public enum AtmOperationStatus {
     SUCCESS("Успешно"),
     INSUFFICIENT_FUNDS("в банкомате недостаточно денег"),
-    NO_EXCHARGE("нет размена");
+    NO_BANKNOTES("не нашлось банкон для выдачи"),
+    FAILED("Ошибка операции");
 
     private String message;
 
