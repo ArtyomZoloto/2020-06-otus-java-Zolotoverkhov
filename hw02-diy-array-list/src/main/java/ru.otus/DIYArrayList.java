@@ -36,7 +36,6 @@ public class DIYArrayList<T> implements List<T> {
         return false;
     }
 
-    //TODO: Возможно сделать лучше, чтобы не было утечки памяти из-за зануления ссылок.
     @Override
     public Iterator<T> iterator() {
         return new DIYIterator<T>(array);
@@ -47,7 +46,6 @@ public class DIYArrayList<T> implements List<T> {
         return Arrays.copyOf(array,size());
     }
 
-    //TODO: Что делает этот метод????
     @Override
     public <T1> T1[] toArray(T1[] a) {
         return null;

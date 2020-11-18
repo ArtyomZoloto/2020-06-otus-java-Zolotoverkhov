@@ -52,7 +52,6 @@ public class DIYListIterator<E> implements ListIterator<E> {
 
     @Override
     public void remove() {
-        //TODO: I dont know how to do this yet
     }
 
     @Override
