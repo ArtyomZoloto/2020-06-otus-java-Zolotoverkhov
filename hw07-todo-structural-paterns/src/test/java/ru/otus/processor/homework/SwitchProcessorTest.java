@@ -1,6 +1,7 @@
 package ru.otus.processor.homework;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.Message;
 import ru.otus.processor.Processor;
@@ -17,6 +18,7 @@ class SwitchProcessorTest {
     }
 
     @Test
+    @DisplayName("Проверяем соответствие обработанных и записанных полей")
     void processTest() {
         Message message = new Message.Builder().field11("field11").field12("field12").build();
 
