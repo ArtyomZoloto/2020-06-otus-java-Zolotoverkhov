@@ -1,5 +1,6 @@
 package ru.otus.processor.homework;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.EvenSecondException;
@@ -12,8 +13,14 @@ import static org.mockito.Mockito.*;
 
 class ExceptionThrowingProcessorTest {
 
-    private final TimeProvider timeProviderMock = mock(TimeProvider.class);
-    private final Processor processor = new ExceptionThrowingProcessor(timeProviderMock);
+    private  TimeProvider timeProviderMock;
+    private  Processor processor;
+
+    @BeforeEach
+    void setUp() {
+        timeProviderMock = mock(TimeProvider.class);
+        processor = new ExceptionThrowingProcessor(timeProviderMock);
+    }
 
     @Test
     @DisplayName("Не должен выкинуть ошибку, т.к секунда четная")

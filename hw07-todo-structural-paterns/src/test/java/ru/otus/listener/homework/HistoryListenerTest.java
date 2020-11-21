@@ -1,5 +1,6 @@
 package ru.otus.listener.homework;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.Message;
@@ -10,7 +11,12 @@ import static org.assertj.core.api.Assertions.*;
 
 class HistoryListenerTest {
 
-    private final HistoryStorage storage = new HistoryStorageImpl();
+    private  HistoryStorage storage;
+
+    @BeforeEach
+    void setUp() {
+       storage = new HistoryStorageImpl();
+    }
 
     @Test
     @DisplayName("Должен записывать в storage данные")
