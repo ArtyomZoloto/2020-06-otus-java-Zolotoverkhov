@@ -12,6 +12,7 @@ import ru.otus.processor.ProcessorConcatFields;
 import ru.otus.processor.ProcessorUpperField10;
 import ru.otus.processor.homework.ExceptionThrowingProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeWork {
@@ -44,14 +45,24 @@ public class HomeWork {
         complexProcessor.addListener(listenerPrinter);
         complexProcessor.addListener(historyListener);
 
+        List<String> strings = new ArrayList<>() {{
+            add("s1");
+            add("s2");
+        }};
+        ObjectForMessage objectForMessage = new ObjectForMessage(strings);
+
         var message = new Message.Builder()
                 .field11("field11")
                 .field12("field12")
+                .field13(objectForMessage)
                 .build();
 
         var result = complexProcessor.handle(message);
-        System.out.println("result:" + result);
-        System.out.println("history is: " + historyStorage.getAllRecords());
+        System.out.println("F13 history is: " + historyStorage.getAllRecords().get(0).getNewMsg().getField13().getData());
+        strings.add("s3");
+        System.out.println("F13 history is: " + historyStorage.getAllRecords().get(0).getNewMsg().getField13().getData());
+        strings.add("s5");
+        System.out.println("F13 history is: " + historyStorage.getAllRecords().get(0).getNewMsg().getField13().getData());
 
         complexProcessor.removeListener(listenerPrinter);
         complexProcessor.removeListener(historyListener);

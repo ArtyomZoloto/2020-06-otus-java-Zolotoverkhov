@@ -1,15 +1,16 @@
 package ru.otus;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ObjectForMessage {
-    private List<String> data;
+    private final List<String> data;
 
-    public List<String> getData() {
-        return data;
+    public ObjectForMessage(List<String> data) {
+        this.data = List.copyOf(data);
     }
 
-    public void setData(List<String> data) {
-        this.data = data;
+    public List<String> getData() {
+        return Collections.unmodifiableList(data);
     }
 }

@@ -1,10 +1,13 @@
 package ru.otus.listener.homework;
 
 import ru.otus.Message;
+
 import ru.otus.listener.Listener;
 import ru.otus.storage.HistoryStorage;
 
+
 import java.time.LocalDateTime;
+
 
 
 public class HistoryListener implements Listener {
@@ -18,8 +21,8 @@ public class HistoryListener implements Listener {
     @Override
     public void onUpdated(Message oldMsg, Message newMsg) {
         storage.addRecord(new HistoryRecord(
-                oldMsg.toBuilder().build(), //ummutability
-                newMsg.toBuilder().build(),
+                oldMsg,
+                newMsg,
                 LocalDateTime.now())
         );
     }
