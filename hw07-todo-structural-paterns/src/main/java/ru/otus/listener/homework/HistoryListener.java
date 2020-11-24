@@ -1,38 +1,75 @@
 package ru.otus.listener.homework;
 
 import ru.otus.Message;
+
 import ru.otus.listener.Listener;
+import ru.otus.storage.HistoryStorage;
+
 
 import java.time.LocalDateTime;
-import java.util.Map;
+
+
 
 public class HistoryListener implements Listener {
 
-    Map<LocalDateTime, HistoryRecord> storage;
+    private final HistoryStorage storage;
 
-    public HistoryListener(Map<LocalDateTime, HistoryRecord> storage) {
+    public HistoryListener(HistoryStorage storage) {
         this.storage = storage;
     }
 
     @Override
     public void onUpdated(Message oldMsg, Message newMsg) {
-        storage.put(LocalDateTime.now(), new HistoryRecord(oldMsg, newMsg));
+        storage.addRecord(new HistoryRecord(
+                oldMsg,
+                newMsg,
+                LocalDateTime.now())
+        );
     }
 
-    public static class HistoryRecord {
-        Message oldMsg, newMsg;
+    public static class HistoryRecord implements Comparable {
+        private final LocalDateTime timeStamp;
+        private final Message oldMsg;
+        private final Message newMsg;
 
-        HistoryRecord(Message oldMsg, Message newMsg) {
+        public HistoryRecord(Message oldMsg, Message newMsg, LocalDateTime timeStamp) {
             this.oldMsg = oldMsg;
             this.newMsg = newMsg;
+            this.timeStamp = timeStamp;
+        }
+
+        public LocalDateTime getTimeStamp() {
+            return timeStamp;
+        }
+
+        public Message getOldMsg() {
+            return oldMsg;
+        }
+
+        public Message getNewMsg() {
+            return newMsg;
         }
 
         @Override
         public String toString() {
             return "HistoryRecord{" +
-                    "oldMsg=" + oldMsg +
+                    "timeStamp=" + timeStamp +
+                    ", oldMsg=" + oldMsg +
                     ", newMsg=" + newMsg +
                     '}';
         }
+
+        // для сравнения записей по дате
+        @Override
+        public int compareTo(Object o) {
+            if (o == null) {
+                return 0;
+            }
+            if (!(o instanceof HistoryRecord)){
+                return 0;
+            }
+            return timeStamp.compareTo(((HistoryRecord) o).getTimeStamp());
+        }
+
     }
 }
