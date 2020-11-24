@@ -75,4 +75,13 @@ class MyGsonTest {
             myGson.toJson(wrongHuman);
         }).isInstanceOf(JsonParseException.class);
     }
+
+    @Test
+    @DisplayName("Должна быть ошибка NPE, если входной объект null")
+    void nullTest() {
+        assertThatThrownBy(()->{
+            myGson.toJson(null);
+        }).isInstanceOf(NullPointerException.class);
+
+    }
 }

@@ -13,7 +13,7 @@ public class MyGson {
      * Convert object to json.
      * Object fields can have primitive types, Strings, Collections and Arrays.
      * Collections can be nested also.
-     * @param object
+     * @param object if Object is NULL, NullPointException thrown.
      * @return json string with object data.
      * @throws JsonParseException if fields of wrong type.
      */
