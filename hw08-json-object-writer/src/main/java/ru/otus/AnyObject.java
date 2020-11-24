@@ -1,6 +1,8 @@
 package ru.otus;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 public class AnyObject {
     private boolean booleanField;
@@ -65,5 +67,25 @@ public class AnyObject {
 
     public void setCollectionField(Collection collectionField) {
         this.collectionField = collectionField;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnyObject anyObject = (AnyObject) o;
+        return booleanField == anyObject.booleanField &&
+                intField == anyObject.intField &&
+                Objects.equals(stringField, anyObject.stringField) &&
+                Objects.equals(IntegerField, anyObject.IntegerField) &&
+                Arrays.equals(arrayField, anyObject.arrayField) &&
+                Objects.equals(collectionField, anyObject.collectionField);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(booleanField, intField, stringField, IntegerField, collectionField);
+        result = 31 * result + Arrays.hashCode(arrayField);
+        return result;
     }
 }

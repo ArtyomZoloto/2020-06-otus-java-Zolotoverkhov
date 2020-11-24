@@ -1,70 +1,154 @@
 package ru.otus;
 
 import javax.json.*;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
+/**
+ * Object-to-JSON converter
+ */
 public class MyGson {
+
     /**
-     * Create json from object
-     * @param object input object
+     * Convert object to json.
+     * Object fields can have primitive types, Strings, Collections and Arrays.
+     * Collections can be nested also.
+     * @param object
+     * @return json string with object data.
+     * @throws JsonParseException if fields of wrong type.
      */
-    public String toJson(Object object) throws IllegalAccessException, InvocationTargetException {
+    public String toJson(Object object) throws JsonParseException {
+        try {
+            return toJsonBuilder(object).build().toString();
+        } catch (IllegalAccessException | IllegalArgumentException ex) {
+            throw new JsonParseException("Can't parse json for object: " + object.toString(), ex);
+        }
+    }
+
+    private JsonObjectBuilder toJsonBuilder(Object object) throws IllegalAccessException {
         JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             boolean wasAccessible = field.isAccessible();
             field.setAccessible(true);
-            Object invocationResult = field.get(object);
-            if (invocationResult instanceof Boolean) {
-                jsonObjectBuilder.add(field.getName(), (Boolean) invocationResult);
-            }
-            if (invocationResult instanceof Byte) {
-                jsonObjectBuilder.add(field.getName(), (Byte) invocationResult);
-            }
-            if (invocationResult instanceof Short) {
-                jsonObjectBuilder.add(field.getName(), (Short) invocationResult);
-            }
-            if (invocationResult instanceof Integer) {
-                jsonObjectBuilder.add(field.getName(), (Integer) invocationResult);
-            }
-            if (invocationResult instanceof Float) {
-                jsonObjectBuilder.add(field.getName(), (Float) invocationResult);
-            }
-            if (invocationResult instanceof Double) {
-                jsonObjectBuilder.add(field.getName(), (Double) invocationResult);
-            }
-            if (invocationResult instanceof Long) {
-                jsonObjectBuilder.add(field.getName(), (Long) invocationResult);
-            }
-            if (invocationResult instanceof String) {
-                jsonObjectBuilder.add(field.getName(), (String) invocationResult);
-            }
-            if (invocationResult.getClass().isArray()) {
-                System.out.println("Array!");
-                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-               //TODO: continue here
-                jsonObjectBuilder.add(field.getName(),null);
+            try {
+                Object invocationResult = field.get(object);
+                add(invocationResult, field.getName(), jsonObjectBuilder);
+            } catch (NullPointerException ex) {
+                continue;
             }
             field.setAccessible(wasAccessible);
         }
-        return jsonObjectBuilder.build().toString();
+        return jsonObjectBuilder;
     }
 
-    public static void main(String[] args) {
-        Object o = new AnyObject(true, 22,"Artem",10,new int[]{1,2,3}, List.of("a","b","c"));
-        MyGson myGson = new MyGson();
-        try {
-            System.out.println(myGson.toJson(o));
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void add(Object object, String name, JsonObjectBuilder jsonObjectBuilder) {
+        if (object instanceof Boolean) {
+            jsonObjectBuilder.add(name, (Boolean) object);
         }
+        if (object instanceof Byte) {
+            jsonObjectBuilder.add(name, (Byte) object);
+        }
+        if (object instanceof Short) {
+            jsonObjectBuilder.add(name, (Short) object);
+        }
+        if (object instanceof Integer) {
+            jsonObjectBuilder.add(name, (Integer) object);
+        }
+        if (object instanceof Float) {
+            jsonObjectBuilder.add(name, (Float) object);
+        }
+        if (object instanceof Double) {
+            jsonObjectBuilder.add(name, (Double) object);
+        }
+        if (object instanceof Long) {
+            jsonObjectBuilder.add(name, (Long) object);
+        }
+        if (object instanceof String) {
+            jsonObjectBuilder.add(name, (String) object);
+        }
+        if (object.getClass().isArray()) {
+            jsonObjectBuilder.add(name, processArray(object));
+        }
+        if (object instanceof Iterable) {
+            jsonObjectBuilder.add(name, processCollection((Iterable) object));
+        }
+    }
+
+    private JsonArrayBuilder processCollection(Iterable iterable) {
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        Iterator iterator = iterable.iterator();
+        while (iterator.hasNext()) {
+            Object object = iterator.next();
+            if (object instanceof Boolean) {
+                builder.add((boolean) object);
+            } else if (object instanceof Byte) {
+                builder.add((byte) object);
+            } else if (object instanceof Short) {
+                builder.add((short) object);
+            } else if (object instanceof Integer) {
+                builder.add((int) object);
+            } else if (object instanceof Float) {
+                builder.add((float) object);
+            } else if (object instanceof Double) {
+                builder.add((double) object);
+            } else if (object instanceof Long) {
+                builder.add((long) object);
+            } else if (object instanceof String) {
+                builder.add((String) object);
+            } else {
+                builder.add(processCollection((Iterable) object));
+            }
+        }
+        return builder;
+    }
+
+    private JsonArrayBuilder processArray(Object object) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        String type = object.getClass().getTypeName();
+        switch (type) {
+            case "boolean[]":
+                for (boolean b : (boolean[]) object) {
+                    arrayBuilder.add(b);
+                }
+            case "byte[]":
+                for (byte b : (byte[]) object) {
+                    arrayBuilder.add(b);
+                }
+                break;
+            case "short[]":
+                for (short s : (short[]) object) {
+                    arrayBuilder.add(s);
+                }
+                break;
+            case "int[]":
+                for (int i : (int[]) object) {
+                    arrayBuilder.add(i);
+                }
+                break;
+            case "float[]":
+                for (float f : (float[]) object) {
+                    arrayBuilder.add(f);
+                }
+                break;
+            case "double[]":
+                for (double d : (double[]) object) {
+                    arrayBuilder.add(d);
+                }
+                break;
+            case "long[]":
+                for (long l : (long[]) object) {
+                    arrayBuilder.add(l);
+                }
+                break;
+            case "String[]":
+                for (String s : (String[]) object) {
+                    arrayBuilder.add(s);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("cant parse this type of object!" + object.getClass().getName());
+        }
+        return arrayBuilder;
     }
 }
