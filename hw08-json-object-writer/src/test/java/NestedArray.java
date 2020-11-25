@@ -16,11 +16,11 @@ public class NestedArray {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NestedArray that = (NestedArray) o;
-        return Arrays.equals(nestedArray, that.nestedArray);
+        return Arrays.deepEquals(nestedArray, that.nestedArray);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(nestedArray);
+        return Arrays.deepHashCode(nestedArray);
     }
 }
