@@ -21,7 +21,7 @@ class MyGsonTest {
 
     @BeforeEach
     void setUp() {
-        myGson = new MyGson2();
+        myGson = new MyGson1();
         gson = new Gson();
     }
 

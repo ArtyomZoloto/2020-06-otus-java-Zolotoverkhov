@@ -1,6 +1,7 @@
 package ru.otus;
 
 import javax.json.*;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -13,6 +14,7 @@ public class MyGson1 implements MyGson {
      * Convert object to json.
      * Object fields can have primitive types, Strings, Collections and Arrays.
      * Collections can be nested also.
+     *
      * @param object if Object is NULL, json string = "null".
      * @return json string with object data.
      * @throws JsonParseException if fields of wrong type.
@@ -29,6 +31,7 @@ public class MyGson1 implements MyGson {
     }
 
     private JsonObjectBuilder toJsonBuilder(Object object) throws IllegalAccessException {
+        //Json.createValue
         JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -36,7 +39,13 @@ public class MyGson1 implements MyGson {
             field.setAccessible(true);
             try {
                 Object invocationResult = field.get(object);
-                add(invocationResult, field.getName(), jsonObjectBuilder);
+                if (invocationResult.getClass().isArray()) {
+                    jsonObjectBuilder.add(field.getName(), createArrayBuilder(invocationResult));
+                } else if (invocationResult instanceof Collection) {
+                    jsonObjectBuilder.add(field.getName(), createJsonValue(invocationResult));
+                } else {
+                    jsonObjectBuilder.add(field.getName(), createJsonValue(invocationResult));
+                }
             } catch (NullPointerException ex) {
                 continue;
             }
@@ -44,6 +53,40 @@ public class MyGson1 implements MyGson {
         }
         return jsonObjectBuilder;
     }
+
+    private JsonArrayBuilder createArrayBuilder(Object object) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        Object[] array = (Object[]) object;
+        for (Object element : array) {
+            arrayBuilder.add(createJsonValue(element));
+        }
+        return arrayBuilder;
+    }
+
+    private JsonValue createJsonValue(Object object) {
+        if (object instanceof Boolean) {
+            Json.createValue(object.toString());
+        } else if (object instanceof Byte) {
+            Json.createValue((byte) object);
+        } else if (object instanceof Short) {
+            Json.createValue((short) object);
+        } else if (object instanceof Integer) {
+            Json.createValue((int) object);
+        } else if (object instanceof Float) {
+            Json.createValue((float) object);
+        } else if (object instanceof Double) {
+            Json.createValue((double) object);
+        } else if (object instanceof Long) {
+            Json.createValue((long) object);
+        } else if (object instanceof String) {
+            Json.createValue((String) object);
+        } else {
+            throw new JsonParseException("unsupported object type");
+        }
+        return null;
+    }
+
+/*
 
     private void add(Object object, String name, JsonObjectBuilder jsonObjectBuilder) {
         if (object instanceof Boolean) {
@@ -107,13 +150,13 @@ public class MyGson1 implements MyGson {
     }
 
     private JsonArrayBuilder processArray(Object object) {
+        Object objectInArray = Array.get(object, 0);
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        String type = object.getClass().getTypeName();
-        switch (type) {
-            case "boolean[]":
-                for (boolean b : (boolean[]) object) {
-                    arrayBuilder.add(b);
-                }
+
+        if (objectInArray instanceof Boolean) {
+            for (boolean b : (boolean[]) object) {
+                arrayBuilder.add(b);
+            }
             case "byte[]":
                 for (byte b : (byte[]) object) {
                     arrayBuilder.add(b);
@@ -154,4 +197,6 @@ public class MyGson1 implements MyGson {
         }
         return arrayBuilder;
     }
+
+ */
 }
