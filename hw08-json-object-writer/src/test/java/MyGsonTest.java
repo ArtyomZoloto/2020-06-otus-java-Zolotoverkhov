@@ -1,6 +1,5 @@
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,8 +38,7 @@ class MyGsonTest {
     @DisplayName("Дополнительный тест, проверящий работу вложенных коллекций.")
     void nestedCollectionTest() {
         List<List<String>> names_names = List.of(List.of("Irina", "Maria", "Vera"), List.of("Vladimir", "Anton", "Yaroslav"));
-        List<List<List<String>>> names_names_names = List.of(names_names);
-        NestedCollection nestedCollection = new NestedCollection(names_names_names);
+        NestedCollection nestedCollection = new NestedCollection(names_names);
         String json = myGson.toJson(nestedCollection);
         NestedCollection fromJson = gson.fromJson(json, NestedCollection.class);
         assertThat(nestedCollection).isEqualTo(fromJson);
@@ -69,15 +67,25 @@ class MyGsonTest {
     }
 
     @Test
-    @Disabled
-    @DisplayName("В новой версии ошибки не выдает.")
-    void toJsonExceptionTest() {
+    @DisplayName("Проверка поля - объектов в массиве")
+    void ArrayComplexObjectTest() {
         Human human = new Human("Roman", 38, List.of("Alex", "Rita", "Vlad"), 178.5f, new byte[]{1, 2, 3});
         Human human2 = new Human("Ivan", 38, List.of("Misha", "Nastya", "Gleb"), 178.5f, new byte[]{1, 2, 3});
-        WrongHuman wrongHuman = new WrongHuman(new Human[]{human, human2});
-        assertThatThrownBy(() -> {
-            myGson.toJson(wrongHuman);
-        }).isInstanceOf(JsonParseException.class);
+        ComplexArrayHuman complexArrayHuman = new ComplexArrayHuman(new Human[]{human, human2});
+        String json = myGson.toJson(complexArrayHuman);
+        ComplexArrayHuman restored = gson.fromJson(json, ComplexArrayHuman.class);
+        assertThat(complexArrayHuman).isEqualTo(restored);
+    }
+
+    @Test
+    @DisplayName("Проверка поля - объектов в массиве")
+    void CollectionComplexObjectTest() {
+        Human human = new Human("Roman", 38, List.of("Alex", "Rita", "Vlad"), 178.5f, new byte[]{1, 2, 3});
+        Human human2 = new Human("Ivan", 38, List.of("Misha", "Nastya", "Gleb"), 178.5f, new byte[]{1, 2, 3});
+        ComplexCollectionHuman complexHuman = new ComplexCollectionHuman(List.of(human, human2));
+        String json = myGson.toJson(complexHuman);
+        ComplexCollectionHuman restored = gson.fromJson(json, ComplexCollectionHuman.class);
+        assertThat(complexHuman).isEqualTo(restored);
     }
 
     @Test
@@ -90,9 +98,7 @@ class MyGsonTest {
     @ParameterizedTest
     @MethodSource("generateDataForCustomTest")
     void customTest(Object o){
-        System.out.println(myGson.toJson(o));
-        System.out.println(gson.toJson(o));
-       // assertThat(myGson.toJson(o)).isEqualTo(gson.toJson(o));
+        assertThat(myGson.toJson(o)).isEqualTo(gson.toJson(o));
     }
 
     private static Stream<Arguments> generateDataForCustomTest() {
@@ -108,6 +114,7 @@ class MyGsonTest {
                 Arguments.of(new float[] {10f, 11f, 12f}),
                 Arguments.of(new double[] {13d, 14d, 15d}),
                 Arguments.of(List.of(16, 17, 18)),
+                Arguments.of(List.of(List.of(List.of(16, 17, 18), List.of(16, 17, List.of(16, 17, 18)), 18), List.of(16, 17, 18), List.of(16, 17, 18))),
                 Arguments.of(Collections.singletonList(19))
         );
     }

@@ -2,17 +2,17 @@ import java.util.List;
 import java.util.Objects;
 
 public class NestedCollection {
-    List<List<List<String>>> list;
+    List<List<String>> list;
 
-    public NestedCollection(List<List<List<String>>> list) {
+    public NestedCollection(List<List<String>> list) {
         this.list = list;
     }
 
-    public List<List<List<String>>> getList() {
+    public List<List<String>> getList() {
         return list;
     }
 
-    public void setList(List<List<List<String>>> list) {
+    public void setList(List<List<String>> list) {
         this.list = list;
     }
 

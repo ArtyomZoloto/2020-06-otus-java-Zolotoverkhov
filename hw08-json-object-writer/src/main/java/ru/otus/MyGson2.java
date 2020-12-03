@@ -4,6 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.*;
 
+/**
+ * Object-to-JSON converter based on  javax.json org.json
+ */
 public class MyGson2 implements MyGson{
 
     private static final Set<Class> simpleTypes = Collections.unmodifiableSet(Set.of(
