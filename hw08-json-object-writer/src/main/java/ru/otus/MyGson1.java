@@ -71,16 +71,10 @@ public class MyGson1 implements MyGson {
 
     private JsonArrayBuilder createArrayBuilderForArray(Object array) {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        int i = 0;
-        Object element;
-        while (true) {
-            try {
-                element = Array.get(array, i++);
-                processElement(arrayBuilder, element);
-            } catch (IndexOutOfBoundsException ex) {
-                return arrayBuilder;
-            }
+        for (int i = 0; i < Array.getLength(array); i++) {
+            processElement(arrayBuilder, Array.get(array, i));
         }
+        return arrayBuilder;
     }
 
     private JsonArrayBuilder createArrayBuilderForCollection(Object collection) {
