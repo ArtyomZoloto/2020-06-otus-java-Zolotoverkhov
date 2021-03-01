@@ -1,0 +1,42 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+javadoc.options.encoding = 'UTF-8'
+
+sourceCompatibility = JavaVersion.VERSION_13
+targetCompatibility = JavaVersion.VERSION_13
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.glassfish/javax.json
+    compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+
+    //Junit platform
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.3.1'
+
+
+    // https://mvnrepository.com/artifact/org.assertj/assertj-core
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.17.2'
+
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    compile group: 'org.json', name: 'json', version: '20201115'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.build.dependsOn tasks.test
